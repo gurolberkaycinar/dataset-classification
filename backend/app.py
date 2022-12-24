@@ -1,27 +1,35 @@
 from flask import Flask, jsonify, request
-from webapp.demo import *
 from classification.naive_bayes.naive_bayes import naive_bayes
 from util.util import convert
 import pandas as pd
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 
-@app.route('/classification/naive_bayes', methods=['POST'])
-def hello_world():  # put application's code here
+@app.route('/classification/naive_bayes/<file_name>', methods=['POST'])
+def naive_bayes_controller(file_name):  # put application's code here
     data = request.get_json()
-    print(request.headers)
-    print(data)
 
-    file_name = data['fileName']
-    print(file_name)
-
-    file = pd.read_csv("datasets/FM 2023.csv")
+    file = pd.read_csv("datasets/" + file_name + ".csv")
     file = file.dropna()
 
-    accuracy, precision, recall, f1 = naive_bayes(file)
-    values = convert(['accuracy', accuracy, 'precision', precision,'recall',  recall, 'f1', f1])
+    label_column = data['label_column']
+    test_percentage = data['test_percentage']
+    accuracy, precision, recall, f1 = naive_bayes(file, label_column, test_percentage)
 
+    values = convert(
+        ['tableHeaders', file.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
+         recall, 'f1',
+         f1])
+    return jsonify(values)
+
+
+@app.route('/datasets/<dataset>', methods=['GET'])
+def get_dataset_sample(dataset):
+    file = pd.read_csv("./datasets/" + dataset + ".csv", nrows=5)
+    values = convert(['tableHeaders', file.columns.tolist(), 'tableValues', file.values.tolist()])
     return jsonify(values)
 
 
