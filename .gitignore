@@ -130,3 +130,6 @@ dmypy.json
 
 /backend/.idea
 /frontend/.idea
+
+#datasets
+/backend/datasets
