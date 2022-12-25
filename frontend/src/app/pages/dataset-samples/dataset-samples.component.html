@@ -1,0 +1,49 @@
+<div class="panel-header panel-header-sm">
+</div>
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <h4 class="card-title ml-4"> Dataset Samples</h4>
+          </div>
+          <div class="row">
+            <div class="col justify-content-center">
+              <div ngbDropdown class="d-inline-block justify-content-center">
+                <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
+                  <h5>{{ selectedDataset }}</h5>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                  <button ngbDropdownItem (click)="onClickButton('Wine')">Wine</button>
+                  <button ngbDropdownItem (click)="onClickButton('FM2023')">FM 2023</button>
+                  <button ngbDropdownItem (click)="onClickButton('Something')">Something else is here</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead class=" text-primary">
+              <ng-container *ngFor="let header of tableHeaders">
+                <th>
+                  {{ header }}
+                </th>
+              </ng-container>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of tableValues; let i = index">
+                  <td *ngFor="let col of row">
+                    {{ col }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

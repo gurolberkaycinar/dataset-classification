@@ -6,11 +6,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
-def naive_bayes(file):
-    X = file.drop(columns=['Finishing'])  # select all columns except 'quality' as features
-    y = file['Finishing']  # select 'quality' column as target variable
+def naive_bayes(file, label_column, test_percentage):
+    X = file.drop(columns=[label_column])  # select all columns except 'quality' as features
+    y = file[label_column]  # select 'quality' column as target variable
 
-    train_features, test_features, train_labels, test_answers = train_test_split(X, y, test_size=0.99)
+    test_ratio = test_percentage / 100
+    train_features, test_features, train_labels, test_answers = train_test_split(X, y, test_size=test_ratio)
 
     model = GaussianNB()
     model.fit(train_features, train_labels)
