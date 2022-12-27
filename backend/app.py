@@ -11,17 +11,17 @@ CORS(app)
 
 @app.route('/classification/naive_bayes/<file_name>', methods=['POST'])
 def naive_bayes_controller(file_name):  # put application's code here
-    data = request.get_json()
+    request_body = request.get_json()
 
-    file = pd.read_csv("datasets/" + file_name + ".csv")
-    file = file.dropna()
+    dataset = pd.read_csv("datasets/" + file_name + ".csv")
+    dataset = dataset.dropna()
 
-    label_column = data['label_column']
-    test_percentage = data['test_percentage']
-    accuracy, precision, recall, f1 = naive_bayes(file, label_column, test_percentage)
+    label_column = request_body['label_column']
+    test_percentage = request_body['test_percentage']
+    accuracy, precision, recall, f1 = naive_bayes(dataset, label_column, test_percentage)
 
     values = convert(
-        ['tableHeaders', file.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
+        ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
          recall, 'f1',
          f1])
     return jsonify(values)
@@ -31,14 +31,18 @@ def knn_controller(file_name):
     req = request.get_json()
     label_column = req['label_column']
     test_percentage = req['test_percentage']
+    neighbour_count = 3
+    # neighbour_count = req['test_percentage']
+    distance_metric = 2
+    # distance_metric = req['test_percentage']
 
-    data = pd.read_csv("datasets/" + file_name + ".csv")
-    data = data.dropna()
+    dataset = pd.read_csv("datasets/" + file_name + ".csv")
+    dataset = dataset.dropna()
 
-    accuracy, precision, recall, f1 = knn(data, label_column, test_percentage, 3, 2)
+    accuracy, precision, recall, f1 = knn(dataset, label_column, test_percentage, neighbour_count, distance_metric)
 
     values = convert(
-        ['tableHeaders', file.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
+        ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
          recall, 'f1',
          f1])
     return jsonify(values)
