@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from classification.naive_bayes.naive_bayes import naive_bayes
+from classification.naive_bayes.naive_bayes import *
 from classification.knn.knn import knn
 from util.util import convert
 import pandas as pd
@@ -10,7 +10,7 @@ CORS(app)
 
 
 @app.route('/classification/naive_bayes/<file_name>', methods=['POST'])
-def naive_bayes_controller(file_name):  # put application's code here
+def naive_bayes_trainer(file_name):  # put application's code here
     request_body = request.get_json()
 
     dataset = pd.read_csv("datasets/" + file_name + ".csv")
@@ -18,13 +18,19 @@ def naive_bayes_controller(file_name):  # put application's code here
 
     label_column = request_body['label_column']
     test_percentage = request_body['test_percentage']
-    accuracy, precision, recall, f1 = naive_bayes(dataset, label_column, test_percentage)
+    accuracy, precision, recall, f1 = naive_bayes_train(dataset, label_column, test_percentage)
 
     values = convert(
         ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
          recall, 'f1',
          f1])
     return jsonify(values)
+
+@app.route('/classification/naive_bayes/predict', methods=['POST'])
+def naive_bayes_predicter():
+    req = request.get_json()
+    return jsonify(naive_bayes_predict(req['features']))
+
 
 @app.route('/classification/knn/<file_name>', methods=['POST'])
 def knn_controller(file_name):
