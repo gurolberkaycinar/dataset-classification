@@ -34,5 +34,5 @@ def naive_bayes_train(file, label_column, test_percentage):
 
 def naive_bayes_predict(features):
     prediction = model.predict(features)
-    print(f'Prediction: {prediction:.2f}')
+    # print(f'Prediction: {prediction:.2f}')
     return prediction
