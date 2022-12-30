@@ -24,12 +24,11 @@ def naive_bayes_trainer(file_name):  # put application's code here
 
     label_column = request_body['label_column']
     test_percentage = request_body['test_percentage']
-    accuracy, precision, recall, f1 = naive_bayes_train(dataset, label_column, test_percentage)
+    accuracy, precision, recall = naive_bayes_train(dataset, label_column, test_percentage)
 
     values = convert(
         ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
-         recall, 'f1',
-         f1])
+         recall])
     return jsonify(values)
 
 
@@ -66,4 +65,4 @@ def get_dataset_sample(dataset):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
