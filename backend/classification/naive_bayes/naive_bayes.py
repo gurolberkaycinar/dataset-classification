@@ -25,5 +25,6 @@ def naive_bayes_train(file, label_column, test_percentage):
 
 
 def naive_bayes_predict(features_dict: dict, label):
-    features = pd.DataFrame.from_dict([features_dict.pop(label)])
+    features_dict.pop(label)
+    features = pd.DataFrame.from_dict([features_dict])
     return model.predict(features)
