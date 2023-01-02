@@ -10,7 +10,6 @@ export class DatasetSamplesComponent implements OnInit {
 
   tableHeaders: string[]
   tableValues: string[]
-  datasets: string[] = ['Wine', 'FM 2023']
   selectedDataset: string = 'Wine'
   constructor(private httpClient: HttpClient) { }
 

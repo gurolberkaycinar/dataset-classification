@@ -36,11 +36,10 @@ export class ModelDashboardComponent implements OnInit {
       features: this.predictForm.value,
       label: this.trainForm.get('label_column').value
     };
-    console.log(body)
     this.httpClient.post<any>(`http://127.0.0.1:5000/prediction/naive_bayes`
       , body)
       .subscribe(response => {
-        console.log(response);
+        console.log(1)
         this.predictedValue = response;
       })
   }
@@ -105,8 +104,6 @@ export class ModelDashboardComponent implements OnInit {
         this.headers = response.tableHeaders
       })
   }
-
-  // TODO: Validators
   private initTrainForm() {
     this.trainForm = new FormGroup({
       test_percentage: new FormControl(null, Validators.required),
