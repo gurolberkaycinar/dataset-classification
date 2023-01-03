@@ -55,7 +55,7 @@ def knn_trainer(file_name):
          recall])
     return jsonify(values)
 
-@app.route('/classification/knn', methods=['POST'])
+@app.route('/prediction/knn', methods=['POST'])
 def knn_predicter():
     req = request.get_json()
     prediction: np.ndarray = knn_predict(req['features'], req['label'])
