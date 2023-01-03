@@ -19,6 +19,8 @@ import { ModelDashboardComponent} from "../../pages/model-dashboard/model-dashbo
 import {MatInputModule} from "@angular/material/input";
 import {MatSelectModule} from "@angular/material/select";
 import {AnimatedComponent} from "../../shared/animated/animated.component";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
+import {WineFormComponent} from "../../forms/wine-form/wine-form.component";
 
 @NgModule({
   imports: [
@@ -29,7 +31,8 @@ import {AnimatedComponent} from "../../shared/animated/animated.component";
     NgbModule,
     ToastrModule.forRoot(),
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    ReactiveFormsModule
   ],
   declarations: [
     DashboardComponent,
@@ -42,7 +45,8 @@ import {AnimatedComponent} from "../../shared/animated/animated.component";
     NotificationsComponent,
     DatasetSamplesComponent,
     ModelDashboardComponent,
-    AnimatedComponent
+    AnimatedComponent,
+    WineFormComponent,
   ]
 })
 
