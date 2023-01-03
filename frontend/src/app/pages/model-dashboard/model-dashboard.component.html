@@ -98,7 +98,8 @@
         </form>
       </div>
       <div class="card-footer" style="text-align: center">
-        <h4> You can send the label column null </h4>
+        <h4 *ngIf="!isPredicted()"> You can send the label column null </h4>
+        <h4 *ngIf="isPredicted()"> The {{ trainForm.get('label_column').value }} value is: {{ predictedValue }} </h4>
       </div>
     </div>
   </div>

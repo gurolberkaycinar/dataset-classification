@@ -18,7 +18,7 @@ export class ModelDashboardComponent implements OnInit {
   trainForm: FormGroup;
   predictForm: FormGroup;
   trainedDataset: string;
-  predictedValue: string;
+  predictedValue: string = null;
   constructor(private httpClient: HttpClient) {
   }
 
@@ -36,10 +36,19 @@ export class ModelDashboardComponent implements OnInit {
       features: this.predictForm.value,
       label: this.trainForm.get('label_column').value
     };
-    this.httpClient.post<any>(`http://127.0.0.1:5000/prediction/naive_bayes`
+    let algorithm: string
+    switch (this.selectedAlgorithm) {
+      case 'Naive Bayesian':
+        algorithm = 'naive_bayes'
+        break;
+      case 'Knn':
+        algorithm = 'knn'
+        break;
+    }
+    this.httpClient.post<any>(`http://127.0.0.1:5000/prediction/${algorithm}`
       , body)
       .subscribe(response => {
-        console.log(1)
+        console.log(response)
         this.predictedValue = response;
       })
   }
@@ -50,6 +59,10 @@ export class ModelDashboardComponent implements OnInit {
 
   isTrainFormInvalid(): boolean {
     return this.trainForm.invalid;
+  }
+
+  isPredicted(): boolean {
+    return this.predictedValue != null;
   }
 
   onDatasetChange(selectedDataset: string) {
@@ -94,7 +107,8 @@ export class ModelDashboardComponent implements OnInit {
         this.precision = response.precision.toFixed(4)
         this.recall = response.recall.toFixed(4)
         this.initPredictForm();
-        this.trained = true
+        this.trained = true;
+        this.predictedValue = null;
       })
   }
 
