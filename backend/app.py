@@ -4,7 +4,7 @@ from sklearn.feature_extraction import DictVectorizer
 import numpy as np
 
 from classification.naive_bayes.naive_bayes import *
-from classification.knn.knn import knn
+from classification.knn.knn import *
 from util.util import convert
 import pandas as pd
 from flask_cors import CORS
@@ -40,7 +40,7 @@ def naive_bayes_predicter():
 
 
 @app.route('/classification/knn/<file_name>', methods=['POST'])
-def knn_controller(file_name):
+def knn_trainer(file_name):
     req = request.get_json()
     label_column = req['label_column']
     test_percentage = req['test_percentage']
@@ -48,14 +48,18 @@ def knn_controller(file_name):
     distance_metric = req['distance_order']
     dataset = pd.read_csv("datasets/" + file_name + ".csv", usecols=lambda x: x != 'url')
     dataset = dataset.dropna()
-    accuracy, precision, recall, f1 = knn(dataset, label_column, test_percentage, neighbour_count, distance_metric)
+    accuracy, precision, recall = knn_train(dataset, label_column, test_percentage, neighbour_count, distance_metric)
 
     values = convert(
         ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
-         recall, 'f1',
-         f1])
+         recall])
     return jsonify(values)
 
+@app.route('/classification/knn', methods=['POST'])
+def knn_predicter():
+    req = request.get_json()
+    prediction: np.ndarray = knn_predict(req['features'], req['label'])
+    return jsonify(prediction[-1].item())
 
 @app.route('/datasets/<dataset>', methods=['GET'])
 def get_dataset_sample(dataset):
