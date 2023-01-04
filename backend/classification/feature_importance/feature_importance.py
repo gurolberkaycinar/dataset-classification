@@ -27,8 +27,7 @@ def filter_dataset(dataset_name, label_column):
     # summarize feature importance
 
     plt.bar([df.head(n=1).columns[i] for i in range(len(importance))], importance)
-    plt.xticks(rotation=90)
-    plt.rc('xtick', labelsize=5)
+    plt.xticks(fontsize=5, rotation=90)
     plt.title("Unfiltered")
     plt.tight_layout()
     plt.savefig('old_graph.png', dpi=500)
@@ -52,8 +51,7 @@ def filter_dataset(dataset_name, label_column):
 
     plt.cla()
     plt.bar([new_data.head(n=1).columns[i] for i in range(len(importance))], importance)
-    plt.xticks(rotation=90)
-    plt.rc('xtick', labelsize=15)
+    plt.xticks(fontsize=5, rotation=30)
     plt.title("Filtered")
     plt.tight_layout()
     plt.savefig('new_graph.png', dpi=500)
