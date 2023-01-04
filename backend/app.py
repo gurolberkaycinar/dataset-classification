@@ -68,7 +68,7 @@ def get_feature_importance():
     print(args)
     res = calculate_importance(args["dataset"], args["label_column"], args["type"])
     if args["type"] == "list":
-        return res.tolist()
+        return res
     else :
         return send_file('graph.png')
 
