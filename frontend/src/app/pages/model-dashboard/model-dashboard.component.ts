@@ -143,8 +143,8 @@ export class ModelDashboardComponent implements OnInit {
 
   initFeatureImportanceGraph() {
     let params = {
-      dataset: 'dataset_phishing' ,// TODO: Farkli data se  t
-      label_column: 'status', // TODO: farkli dataset
+      dataset: 'dataset_phishing' ,
+      label_column: 'status',
       type: 'image'
     }
 

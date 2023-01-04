@@ -24,9 +24,9 @@ def naive_bayes_train(file, label_column, test_percentage):
     # filtered predicter
     global filtered_naive_bayes
     filtered_naive_bayes = GaussianNB()
-    dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/new_dataset_phishing.csv")
-    X = file.drop(columns=[label_column])
-    y = file[label_column]
+    new_dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/new_dataset_phishing.csv")
+    X = new_dataset.drop(columns=[label_column])
+    y = new_dataset[label_column]
     filtered_naive_bayes.fit(X, y)
 
     return accuracy, precision, recall

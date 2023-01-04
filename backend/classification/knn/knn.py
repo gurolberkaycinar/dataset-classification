@@ -32,9 +32,9 @@ def knn_train(file, label_column, test_percentage, neighbors, distance_power):
     #filtered predicter
     global filtered_knn
     filtered_knn = KNeighborsClassifier(n_neighbors=neighbors, p=distance_power)
-    dataset =  pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/new_dataset_phishing.csv")
-    X = file.drop(columns=[label_column])
-    y = file[label_column]
+    new_dataset =  pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/new_dataset_phishing.csv")
+    X = new_dataset.drop(columns=[label_column])
+    y = new_dataset[label_column]
     filtered_knn.fit(X, y)
 
     return accuracy, precision, recall
