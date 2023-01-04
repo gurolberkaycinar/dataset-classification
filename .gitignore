@@ -135,6 +135,10 @@ dmypy.json
 /backend/datasets
 /backend/graph.png
 
-/backend/graph.png
 
 .idea/
+
+
+backend/new_graph.png
+
+backend/old_graph.png

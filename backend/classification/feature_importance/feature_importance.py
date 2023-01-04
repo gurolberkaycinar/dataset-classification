@@ -1,29 +1,21 @@
-# importing libraries
+import numpy as np
 import pandas as pd
-import sys
+import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LassoCV
 from pathlib import Path
 from sklearn.linear_model import LinearRegression
 
-
-def calculate_importance(dataset_name, label_column, type):
-    dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/" + dataset_name + ".csv")
-
-    X = dataset.drop(columns=[label_column])
-    y = dataset[label_column]
-
-
-    # reg = LassoCV()
-    # reg.fit(X, y)
-    # coef = pd.Series(reg.coef_)
-    # print(coef)
-    # coef = coef.sort_values()
-    # coef.plot(kind="bar")
-    # plt.title("Feature importances")
-    # plt.tight_layout()
-    # plt.savefig('graph.png')
-    # plt.show()
+def filter_dataset(dataset_name, label_column):
+    old_dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/old_" + dataset_name + ".csv")
+    old_dataset['status'] = old_dataset['status'].replace(['legitimate'], '0')
+    old_dataset['status'] = old_dataset['status'].replace(['phishing'], '1')
+    df = pd.DataFrame(data=old_dataset)
+    df = df.drop(['url'], axis=1)
+    print(df.head(n=2))
+    X = old_dataset.drop(columns=[label_column, "url"])
+    y = old_dataset[label_column]
 
     model = LinearRegression()
     # fit the model
@@ -31,16 +23,38 @@ def calculate_importance(dataset_name, label_column, type):
     # get importance
     importance = model.coef_
     # summarize feature importance
-    for i, v in enumerate(importance):
-        print('Feature: %0d, Score: %.5f' % (i, v))
-    # plot feature importance
-    df = pd.DataFrame(data=X)
-    plt.bar([df.head(n=1).columns[i] for i in range(len(importance))], importance)
-    plt.xticks(rotation=90)
-    plt.title("Feature importances")
-    plt.savefig('graph.png')
-    plt.tight_layout()
-    plt.show()
-    importance = importance.tolist()
 
-    return importance
+    plt.bar([df.head(n=1).columns[i] for i in range(len(importance))], importance)
+    plt.xticks(fontsize=5, rotation=90)
+    plt.title("Unfiltered")
+    plt.tight_layout()
+    plt.savefig('old_graph.png', dpi=500)
+    plt.close()
+
+    indexes = np.array(importance)
+    indexes = np.absolute(indexes)
+    indexes = np.argpartition(indexes, -10)[-10:]
+    indexes = indexes.tolist()
+
+    ## Creating new data
+    new_data = pd.DataFrame(df.iloc[:, indexes])
+    new_data["status"] = y
+    print(new_data.head(n=1))
+
+    X = new_data.drop(labels="status", axis=1)
+    y = new_data["status"]
+
+    model.fit(X, y)
+    # get importance
+    importance = model.coef_
+
+    plt.cla()
+    plt.bar([new_data.head(n=1).columns[i] for i in range(len(importance))], importance)
+    plt.xticks(fontsize=5, rotation=30)
+    plt.title("Filtered")
+    plt.tight_layout()
+    plt.savefig('new_graph.png', dpi=500)
+    plt.close()
+    # plt.show()
+
+    new_data.to_csv(str(Path(__file__).parent.parent.parent) + '/datasets/new_' + dataset_name + '.csv', index=False)

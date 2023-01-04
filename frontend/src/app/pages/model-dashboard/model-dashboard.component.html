@@ -10,15 +10,14 @@
             <div class="input-group col-md-6">
               <span class="input-group-text">Select Dataset</span>
               <select #selectedDataset (change)="onDatasetChange(selectedDataset.value)">
-                <option [defaultSelected]="selectedDataset" value="Wine">Wine</option>
-                <option value="FM2023">FM2023</option>
-                <option value="dataset_phishing">Phishing Websites</option>
+                <option value="old_dataset_phishing">Old Phishing Websites</option>
+                <option value="new_dataset_phishing">New Phishing Websites</option>
               </select>
             </div>
             <div class="input-group col-md-6">
               <span class="input-group-text">Select Algorithm</span>
               <select #selectedElement (change)="onAlgorithmChange(selectedElement.value)">
-                <option [defaultSelected]="selectedDataset" value="Knn">KNN</option>
+                <option value="Knn">KNN</option>
                 <option value="Naive Bayesian">Naive Bayes</option>
               </select>
             </div>
@@ -27,9 +26,10 @@
             <div class="input-group col-md-6">
               <span class="input-group-text">Label Column</span>
               <select formControlName="label_column">
-                <ng-container *ngFor="let header of headers">
-                  <option value="{{ header }}"> {{ header }}</option>
-                </ng-container>
+                <option > {{label}} </option>
+<!--                <ng-container *ngFor="let header of status">-->
+<!--                  <option value="{{ header }}"> {{ header }}</option>-->
+<!--                </ng-container>-->
               </select>
             </div>
             <div class="input-group col-md-6">
@@ -54,7 +54,22 @@
       </div>
     </div>
   </div>
-
+  <div *ngIf="canvasReady" class="row col-12 justify-content-center">
+    <div class="card card-chart">
+      <div class="card-header">
+        <h5 class="card-category">Made with cross validation</h5>
+        <h4 class="card-title">Feature Importance</h4>
+      </div>
+      <div class="card-body justify-content-center">
+        <div class="row justify-content-center">
+          <img class="col-12" [src]="oldGraph" alt="image">
+        </div>
+        <div class="row mt-4 justify-content-center">
+          <img class="col-12" [src]="newGraph" alt="image">
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="row col-12 justify-content-center">
     <div class="card col-10">
       <h3 class="card-title ml-5">Accuracy</h3>
@@ -81,33 +96,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="trained" class="row col-12 justify-content-center">
-    <div class="card card-chart">
-      <div class="card-header">
-        <h5 class="card-category">Made with cross validation</h5>
-        <h4 class="card-title">Feature Importance</h4>
-      </div>
-      <div class="card-body">
-        <div class="chart-area">
-          <button class="btn btn-success" (click)="initFeatureImportanceGraph()" >SUBMIT</button>
-<!--          <canvas baseChart id="featureImportanceChart"-->
-<!--                  [datasets]="featureImportanceChartData"-->
-<!--                  [labels]="featureImportanceChartLabels"-->
-<!--                  [colors]="featureImportanceChartColors"></canvas>-->
-<!--                  [options]="lineChartGradientsNumbersOptions"-->
-<!--                  [chartType]="lineChartGradientsNumbersType"-->
-<!--                  (chartHover)="chartHovered($event)"-->
-<!--                  (chartClick)="chartClicked($event)"></canvas>-->
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="stats">
-          <i class="now-ui-icons ui-2_time-alarm"></i> Last 7 days
-        </div>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="trained" class="row col-12 justify-content-center">
+  <div *ngIf="trained && canvasReady" class="row col-12 justify-content-center">
     <div class="card">
       <div class="card-title" style="text-align: center"><h3>Predict</h3><</div>
       <div class="card-body">
