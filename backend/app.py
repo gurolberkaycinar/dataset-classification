@@ -66,7 +66,7 @@ def knn_predicter():
 def get_feature_importance():
     args = request.args
     print(args)
-    calculate_importance(args["dataset"], args["label_column"])
+    filter_dataset(args["dataset"], args["label_column"])
     return send_file('old_graph.png')
 
 @app.route('/feature-importance-new', methods=['GET'])

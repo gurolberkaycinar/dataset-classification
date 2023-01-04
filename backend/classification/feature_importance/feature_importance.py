@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from sklearn.linear_model import LinearRegression
 
-
-def calculate_importance(dataset_name, label_column):
-    old_dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/old_" + dataset_name + ".csv")
+def filter_dataset(dataset_name, label_column):
+    old_dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/" + dataset_name + ".csv")
     old_dataset['status'] = old_dataset['status'].replace(['legitimate'], '0')
     old_dataset['status'] = old_dataset['status'].replace(['phishing'], '1')
     df = pd.DataFrame(data=old_dataset)
