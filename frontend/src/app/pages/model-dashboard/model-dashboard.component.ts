@@ -1,6 +1,7 @@
 import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-model-dashboard',
@@ -19,20 +20,17 @@ export class ModelDashboardComponent implements OnInit {
   predictForm: FormGroup;
   trainedDataset: string;
   predictedValue: string = null;
-  gradientFill
-  ctx
-  canvas
-  chartColor
-  gradientStroke
-  featureImportanceChartData: Array<any>
-  featureImportanceChartLabels: Array<any>
-  featureImportanceChartColors: Array<any>
-  constructor(private httpClient: HttpClient) {
+  oldGraph
+  newGraph
+  canvasReady: boolean = false;
+  label = "status"
+  constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer) {
   }
 
   ngOnInit(): void {
     this.getHeaders();
     this.initTrainForm()
+    this.initFeatureImportanceGraph();
   }
 
   onClickTrain() {
@@ -116,13 +114,12 @@ export class ModelDashboardComponent implements OnInit {
         this.recall = response.recall.toFixed(4)
         this.initPredictForm();
         this.trained = true;
-        this.initFeatureImportanceGraph();
         this.predictedValue = null;
       })
   }
 
   private getHeaders() {
-    this.httpClient.get<any>(`http://127.0.0.1:5000/datasets/${this.selectedDataset}`)
+    this.httpClient.get<any>(`http://127.0.0.1:5000/datasets/new_${this.selectedDataset}`)
       .subscribe(response => {
         this.headers = response.tableHeaders
       })
@@ -146,58 +143,21 @@ export class ModelDashboardComponent implements OnInit {
 
   initFeatureImportanceGraph() {
     let params = {
-      dataset: this.selectedDataset,
-      label_column: this.trainForm.get('label_column').value,
-      type: 'list'
+      dataset: 'dataset_phishing' ,// TODO: Farkli data se  t
+      label_column: 'status', // TODO: farkli dataset
+      type: 'image'
     }
-    console.log("--------------------------------------------------------")
-    this.httpClient.get<any>(`localhost:5000/feature-importance`, { params: params } )
-      .subscribe( response => {
 
-        console.log(response);
-      })
-    // this.chartColor = "#FFFFFF";
-    // this.canvas = document.getElementById("featureImportanceChart");
-    // this.ctx = this.canvas.getContext("2d");
-    //
-    // this.gradientStroke = this.ctx.createLinearGradient(500, 0, 100, 0);
-    // this.gradientStroke.addColorStop(0, '#80b6f4');
-    // this.gradientStroke.addColorStop(1, this.chartColor);
-    //
-    // this.gradientFill = this.ctx.createLinearGradient(0, 200, 0, 50);
-    // this.gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-    // this.gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
-    //
-    //
-    //
-    // this.gradientFill = this.ctx.createLinearGradient(0, 200, 0, 50);
-    // this.gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-    // this.gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
-    //
-    //
-    //
-    //
-    // this.featureImportanceChartData = [
-    //   {
-    //     label: "Active Countries",
-    //     pointBorderWidth: 2,
-    //     pointHoverRadius: 4,
-    //     pointHoverBorderWidth: 1,
-    //     pointRadius: 4,
-    //     fill: true,
-    //     borderWidth: 1,
-    //     data: [80, 99, 86, 96, 123, 85, 100, 75, 88, 90, 123, 155]
-    //   }
-    // ];
-    // this.featureImportanceChartColors = [
-    //   {
-    //     backgroundColor: this.gradientFill,
-    //     borderColor: "#2CA8FF",
-    //     pointBorderColor: "#FFF",
-    //     pointBackgroundColor: "#2CA8FF",
-    //   }
-    // ];
-    // this.featureImportanceChartLabels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    //
+    this.httpClient.get("http://127.0.0.1:5000/feature-importance" , { params: params, responseType: 'blob' } )
+      .subscribe( response => {
+        const file = new Blob([response], { type: 'image/png' });
+        this.oldGraph = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+        this.httpClient.get("http://127.0.0.1:5000/feature-importance-new" , { params: params, responseType: 'blob' } )
+          .subscribe( response => {
+            const file = new Blob([response], { type: 'image/png' });
+            this.newGraph = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+            this.canvasReady = true
+          });
+      });
   }
 }
