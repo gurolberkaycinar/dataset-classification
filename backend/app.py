@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from sklearn.feature_extraction import DictVectorizer
 import numpy as np
 
@@ -66,7 +66,11 @@ def knn_predicter():
 def get_feature_importance():
     args = request.args
     print(args)
-    return calculate_importance(args["dataset"], args["label_column"]).tolist()
+    res = calculate_importance(args["dataset"], args["label_column"], args["type"])
+    if args["type"] == "list":
+        return res.tolist()
+    else :
+        return send_file('graph.png')
 
 @app.route('/datasets/<dataset>', methods=['GET'])
 def get_dataset_sample(dataset):
