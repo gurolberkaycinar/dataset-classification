@@ -12,9 +12,9 @@ export class ModelDashboardComponent implements OnInit {
   accuracy: number = 0
   precision: number = 0
   recall: number = 0
-  selectedDataset: string = 'Wine'
+  selectedDataset: string = "old_dataset_phishing"
   headers: string[] = []
-  selectedAlgorithm: string = 'Knn'
+  selectedAlgorithm: string = "Knn"
   trained: boolean = false;
   trainForm: FormGroup;
   predictForm: FormGroup;
@@ -119,7 +119,7 @@ export class ModelDashboardComponent implements OnInit {
   }
 
   private getHeaders() {
-    this.httpClient.get<any>(`http://127.0.0.1:5000/datasets/new_${this.selectedDataset}`)
+    this.httpClient.get<any>(`http://127.0.0.1:5000/datasets/new_dataset_phishing`)
       .subscribe(response => {
         this.headers = response.tableHeaders
       })

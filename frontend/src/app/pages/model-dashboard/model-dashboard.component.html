@@ -10,15 +10,14 @@
             <div class="input-group col-md-6">
               <span class="input-group-text">Select Dataset</span>
               <select #selectedDataset (change)="onDatasetChange(selectedDataset.value)">
-                <option [defaultSelected]="selectedDataset" value="Wine">Wine</option>
-                <option value="FM2023">FM2023</option>
-                <option value="dataset_phishing">Phishing Websites</option>
+                <option value="old_dataset_phishing">Old Phishing Websites</option>
+                <option value="new_dataset_phishing">New Phishing Websites</option>
               </select>
             </div>
             <div class="input-group col-md-6">
               <span class="input-group-text">Select Algorithm</span>
               <select #selectedElement (change)="onAlgorithmChange(selectedElement.value)">
-                <option [defaultSelected]="selectedDataset" value="Knn">KNN</option>
+                <option value="Knn">KNN</option>
                 <option value="Naive Bayesian">Naive Bayes</option>
               </select>
             </div>
@@ -27,7 +26,7 @@
             <div class="input-group col-md-6">
               <span class="input-group-text">Label Column</span>
               <select formControlName="label_column">
-                <option> {{label}} </option>
+                <option > {{label}} </option>
 <!--                <ng-container *ngFor="let header of status">-->
 <!--                  <option value="{{ header }}"> {{ header }}</option>-->
 <!--                </ng-container>-->

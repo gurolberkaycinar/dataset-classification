@@ -1,11 +1,9 @@
-# importing libraries
-import base64
-
 import numpy as np
 import pandas as pd
-import sys
+import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LassoCV
 from pathlib import Path
 from sklearn.linear_model import LinearRegression
 

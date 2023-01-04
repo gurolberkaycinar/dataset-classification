@@ -10,15 +10,17 @@ export class DatasetSamplesComponent implements OnInit {
 
   tableHeaders: string[]
   tableValues: string[]
-  selectedDataset: string = 'Wine'
+  selectedDataset: string;
+  prettierSelectedDataset: string;
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.updateTable()
   }
 
-  onClickButton(selectedDataset: any) {
+  onClickButton(selectedDataset: any, prettierSelectedDataset: string) {
     this.selectedDataset = selectedDataset
+    this.prettierSelectedDataset = prettierSelectedDataset
     this.updateTable()
   }
 

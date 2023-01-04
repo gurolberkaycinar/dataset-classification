@@ -12,12 +12,11 @@
             <div class="col justify-content-center">
               <div ngbDropdown class="d-inline-block justify-content-center">
                 <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
-                  <h5>{{ selectedDataset }}</h5>
+                  <h5>{{ prettierSelectedDataset }}</h5>
                 </button>
                 <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                  <button ngbDropdownItem (click)="onClickButton('Wine')">Wine</button>
-                  <button ngbDropdownItem (click)="onClickButton('FM2023')">FM 2023</button>
-                  <button ngbDropdownItem (click)="onClickButton('dataset_phishing')">Phishing Websitese</button>
+                  <button ngbDropdownItem (click)="onClickButton('old_dataset_phishing', 'Unfiltered Phishing Websites')">Unfiltered Phishing Websites</button>
+                  <button ngbDropdownItem (click)="onClickButton('new_dataset_phishing', 'Filtered Phishing Websites')">Filtered Phishing Websites</button>
                 </div>
               </div>
             </div>
