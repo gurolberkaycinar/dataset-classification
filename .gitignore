@@ -135,4 +135,6 @@ dmypy.json
 /backend/datasets
 /backend/graph.png
 
+/backend/graph.png
+
 .idea/
