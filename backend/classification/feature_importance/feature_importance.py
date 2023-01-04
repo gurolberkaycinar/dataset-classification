@@ -8,12 +8,12 @@ from pathlib import Path
 from sklearn.linear_model import LinearRegression
 
 def filter_dataset(dataset_name, label_column):
-    old_dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/" + dataset_name + ".csv")
+    old_dataset = pd.read_csv(str(Path(__file__).parent.parent.parent) + "/datasets/old_" + dataset_name + ".csv")
     old_dataset['status'] = old_dataset['status'].replace(['legitimate'], '0')
     old_dataset['status'] = old_dataset['status'].replace(['phishing'], '1')
     df = pd.DataFrame(data=old_dataset)
     df = df.drop(['url'], axis=1)
-
+    print(df.head(n=2))
     X = old_dataset.drop(columns=[label_column, "url"])
     y = old_dataset[label_column]
 
@@ -39,6 +39,7 @@ def filter_dataset(dataset_name, label_column):
     ## Creating new data
     new_data = pd.DataFrame(df.iloc[:, indexes])
     new_data["status"] = y
+    print(new_data.head(n=1))
 
     X = new_data.drop(labels="status", axis=1)
     y = new_data["status"]
@@ -56,4 +57,4 @@ def filter_dataset(dataset_name, label_column):
     plt.close()
     # plt.show()
 
-    new_data.to_csv(str(Path(__file__).parent.parent.parent) + '/datasets/new_' + dataset_name + '.csv')
+    new_data.to_csv(str(Path(__file__).parent.parent.parent) + '/datasets/new_' + dataset_name + '.csv', index=False)
