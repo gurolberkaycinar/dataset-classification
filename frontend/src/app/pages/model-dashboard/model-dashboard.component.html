@@ -55,7 +55,22 @@
       </div>
     </div>
   </div>
-
+  <div *ngIf="canvasReady" class="row col-12 justify-content-center">
+    <div class="card card-chart">
+      <div class="card-header">
+        <h5 class="card-category">Made with cross validation</h5>
+        <h4 class="card-title">Feature Importance</h4>
+      </div>
+      <div class="card-body justify-content-center">
+        <div class="row justify-content-center">
+          <img class="col-12" [src]="oldGraph" alt="image">
+        </div>
+        <div class="row mt-4 justify-content-center">
+          <img class="col-12" [src]="newGraph" alt="image">
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="row col-12 justify-content-center">
     <div class="card col-10">
       <h3 class="card-title ml-5">Accuracy</h3>
@@ -79,22 +94,6 @@
       <h3 class="card-title ml-5">Precision</h3>
       <div *ngIf="trained" class="justify-content-center">
         <h1 style="text-align: center">{{ precision }}</h1>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="canvasReady" class="row col-12 justify-content-center">
-    <div class="card card-chart">
-      <div class="card-header">
-        <h5 class="card-category">Made with cross validation</h5>
-        <h4 class="card-title">Feature Importance</h4>
-      </div>
-      <div class="card-body justify-content-center">
-        <div class="row justify-content-center">
-          <img class="col-12" [src]="oldGraph" alt="image">
-        </div>
-        <div class="row mt-4 justify-content-center">
-          <img class="col-12" [src]="newGraph" alt="image">
-        </div>
       </div>
     </div>
   </div>

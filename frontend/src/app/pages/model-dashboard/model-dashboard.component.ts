@@ -156,7 +156,7 @@ export class ModelDashboardComponent implements OnInit {
           .subscribe( response => {
             const file = new Blob([response], { type: 'image/png' });
             this.newGraph = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
-            this.canvasReady = true
+              this.canvasReady = true
           });
       });
   }
