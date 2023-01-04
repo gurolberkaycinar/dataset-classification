@@ -19,6 +19,14 @@ export class ModelDashboardComponent implements OnInit {
   predictForm: FormGroup;
   trainedDataset: string;
   predictedValue: string = null;
+  gradientFill
+  ctx
+  canvas
+  chartColor
+  gradientStroke
+  featureImportanceChartData: Array<any>
+  featureImportanceChartLabels: Array<any>
+  featureImportanceChartColors: Array<any>
   constructor(private httpClient: HttpClient) {
   }
 
@@ -108,6 +116,7 @@ export class ModelDashboardComponent implements OnInit {
         this.recall = response.recall.toFixed(4)
         this.initPredictForm();
         this.trained = true;
+        this.initFeatureImportanceGraph();
         this.predictedValue = null;
       })
   }
@@ -133,5 +142,62 @@ export class ModelDashboardComponent implements OnInit {
       formControls[header] = new FormControl();
     });
     this.predictForm = new FormGroup(formControls);
+  }
+
+  initFeatureImportanceGraph() {
+    let params = {
+      dataset: this.selectedDataset,
+      label_column: this.trainForm.get('label_column').value,
+      type: 'list'
+    }
+    console.log("--------------------------------------------------------")
+    this.httpClient.get<any>(`localhost:5000/feature-importance`, { params: params } )
+      .subscribe( response => {
+
+        console.log(response);
+      })
+    // this.chartColor = "#FFFFFF";
+    // this.canvas = document.getElementById("featureImportanceChart");
+    // this.ctx = this.canvas.getContext("2d");
+    //
+    // this.gradientStroke = this.ctx.createLinearGradient(500, 0, 100, 0);
+    // this.gradientStroke.addColorStop(0, '#80b6f4');
+    // this.gradientStroke.addColorStop(1, this.chartColor);
+    //
+    // this.gradientFill = this.ctx.createLinearGradient(0, 200, 0, 50);
+    // this.gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    // this.gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+    //
+    //
+    //
+    // this.gradientFill = this.ctx.createLinearGradient(0, 200, 0, 50);
+    // this.gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    // this.gradientFill.addColorStop(1, "rgba(255, 255, 255, 0.24)");
+    //
+    //
+    //
+    //
+    // this.featureImportanceChartData = [
+    //   {
+    //     label: "Active Countries",
+    //     pointBorderWidth: 2,
+    //     pointHoverRadius: 4,
+    //     pointHoverBorderWidth: 1,
+    //     pointRadius: 4,
+    //     fill: true,
+    //     borderWidth: 1,
+    //     data: [80, 99, 86, 96, 123, 85, 100, 75, 88, 90, 123, 155]
+    //   }
+    // ];
+    // this.featureImportanceChartColors = [
+    //   {
+    //     backgroundColor: this.gradientFill,
+    //     borderColor: "#2CA8FF",
+    //     pointBorderColor: "#FFF",
+    //     pointBackgroundColor: "#2CA8FF",
+    //   }
+    // ];
+    // this.featureImportanceChartLabels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    //
   }
 }

@@ -14,7 +14,7 @@ CORS(app)
 
 
 @app.route('/classification/naive_bayes/<file_name>', methods=['POST'])
-def naive_bayes_trainer(file_name):  # put application's code here
+def naive_bayes_trainer(file_name):
     request_body = request.get_json()
 
     dataset = pd.read_csv("datasets/" + file_name + ".csv", usecols=lambda x: x != 'url')
