@@ -1,6 +1,10 @@
+import json
 from flask import Flask, jsonify, request
-from classification.naive_bayes.naive_bayes import naive_bayes
-from classification.knn.knn import knn
+from sklearn.feature_extraction import DictVectorizer
+import numpy as np
+
+from classification.naive_bayes.naive_bayes import *
+from classification.knn.knn import *
 from util.util import convert
 import pandas as pd
 from flask_cors import CORS
@@ -10,42 +14,52 @@ CORS(app)
 
 
 @app.route('/classification/naive_bayes/<file_name>', methods=['POST'])
-def naive_bayes_controller(file_name):  # put application's code here
+def naive_bayes_trainer(file_name):  # put application's code here
     request_body = request.get_json()
 
-    dataset = pd.read_csv("datasets/" + file_name + ".csv")
+    dataset = pd.read_csv("datasets/" + file_name + ".csv", usecols=lambda x: x != 'url')
     dataset = dataset.dropna()
+
+    print(request_body)
 
     label_column = request_body['label_column']
     test_percentage = request_body['test_percentage']
-    accuracy, precision, recall, f1 = naive_bayes(dataset, label_column, test_percentage)
+    accuracy, precision, recall = naive_bayes_train(dataset, label_column, test_percentage)
 
     values = convert(
         ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
-         recall, 'f1',
-         f1])
+         recall])
     return jsonify(values)
 
+
+@app.route('/prediction/naive_bayes', methods=['POST'])
+def naive_bayes_predicter():
+    req = request.get_json()
+    prediction: np.ndarray = naive_bayes_predict(req['features'], req['label'])
+    return jsonify(prediction[-1].item())
+
+
 @app.route('/classification/knn/<file_name>', methods=['POST'])
-def knn_controller(file_name):
+def knn_trainer(file_name):
     req = request.get_json()
     label_column = req['label_column']
     test_percentage = req['test_percentage']
-    neighbour_count = 3
-    # neighbour_count = req['test_percentage']
-    distance_metric = 2
-    # distance_metric = req['test_percentage']
-
-    dataset = pd.read_csv("datasets/" + file_name + ".csv")
+    neighbour_count = req['neighbour_count']
+    distance_metric = req['distance_order']
+    dataset = pd.read_csv("datasets/" + file_name + ".csv", usecols=lambda x: x != 'url')
     dataset = dataset.dropna()
-
-    accuracy, precision, recall, f1 = knn(dataset, label_column, test_percentage, neighbour_count, distance_metric)
+    accuracy, precision, recall = knn_train(dataset, label_column, test_percentage, neighbour_count, distance_metric)
 
     values = convert(
         ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
-         recall, 'f1',
-         f1])
+         recall])
     return jsonify(values)
+
+@app.route('/prediction/knn', methods=['POST'])
+def knn_predicter():
+    req = request.get_json()
+    prediction: np.ndarray = knn_predict(req['features'], req['label'])
+    return jsonify(prediction[-1].item())
 
 @app.route('/datasets/<dataset>', methods=['GET'])
 def get_dataset_sample(dataset):

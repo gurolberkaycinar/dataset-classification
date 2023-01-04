@@ -1,5 +1,6 @@
 import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-model-dashboard',
@@ -7,61 +8,84 @@ import {HttpClient} from "@angular/common/http";
   styleUrls: ['./model-dashboard.component.css']
 })
 export class ModelDashboardComponent implements OnInit {
-  accuracy: number
-  precision: number
-  recall: number
-  selectedDataset: string
-  selectedAlgorithm: string
-  testPercentage: number
-  labelColumn: string
-  @ViewChild("oneItem") oneItem: any;
-  @ViewChildren("count") count: QueryList<any>;
-
-  constructor(private httpClient: HttpClient, private elRef: ElementRef) {
+  accuracy: number = 0
+  precision: number = 0
+  recall: number = 0
+  selectedDataset: string = 'Wine'
+  headers: string[] = []
+  selectedAlgorithm: string = 'Knn'
+  trained: boolean = false;
+  trainForm: FormGroup;
+  predictForm: FormGroup;
+  trainedDataset: string;
+  predictedValue: string = null;
+  constructor(private httpClient: HttpClient) {
   }
 
   ngOnInit(): void {
-    // this.initCharts();
+    this.getHeaders();
+    this.initTrainForm()
   }
 
-  onClickDatasetButton(selectedDataset: string) {
-    this.selectedDataset = selectedDataset
-  }
-
-  onClickAlgorithmButton(selectedAlgorithm: string) {
-    this.selectedAlgorithm = selectedAlgorithm
-  }
-
-  onClickStart() {
+  onClickTrain() {
     this.updateCharts()
   }
 
-  counterFunc(end: number, element: any, duration: number) {
-    let range, current: number, step, timer;
-
-    range = end - 0;
-    current = 0;
-    step = Math.abs(Math.floor(duration / range));
-
-    timer = setInterval(() => {
-      current += 1;
-      element.nativeElement.textContent = current;
-      if (current == end) {
-        clearInterval(timer);
-      }
-    }, step);
+  onClickPredict() {
+    const body = {
+      features: this.predictForm.value,
+      label: this.trainForm.get('label_column').value
+    };
+    let algorithm: string
+    switch (this.selectedAlgorithm) {
+      case 'Naive Bayesian':
+        algorithm = 'naive_bayes'
+        break;
+      case 'Knn':
+        algorithm = 'knn'
+        break;
+    }
+    this.httpClient.post<any>(`http://127.0.0.1:5000/prediction/${algorithm}`
+      , body)
+      .subscribe(response => {
+        console.log(response)
+        this.predictedValue = response;
+      })
   }
 
-  animateCount() {
-    let _this = this;
+  isKnn(): boolean {
+    return this.selectedAlgorithm == 'Knn'
+  }
 
-    let single = this.oneItem.nativeElement.innerHTML;
+  isTrainFormInvalid(): boolean {
+    return this.trainForm.invalid;
+  }
 
-    this.counterFunc(single, this.oneItem, 7000);
+  isPredicted(): boolean {
+    return this.predictedValue != null;
+  }
 
-    this.count.forEach(item => {
-      _this.counterFunc(item.nativeElement.innerHTML, item, 2000);
-    });
+  onDatasetChange(selectedDataset: string) {
+    this.selectedDataset = selectedDataset;
+    this.selectedDataset != this.trainedDataset ? this.trained = false : this.trained = true;
+    this.getHeaders();
+  }
+
+  onAlgorithmChange(selectedAlgorithm: string) {
+    this.selectedAlgorithm = selectedAlgorithm;
+    switch (selectedAlgorithm) {
+      case 'Knn':
+        this.trainForm.get('neighbour_count').setValidators(Validators.required)
+        this.trainForm.get('distance_order').setValidators(Validators.required)
+        break;
+      case 'Naive Bayesian':
+        this.trainForm.get('neighbour_count').clearValidators()
+        this.trainForm.get('distance_order').clearValidators()
+        break;
+
+    }
+    this.trainForm.get('neighbour_count').updateValueAndValidity()
+    this.trainForm.get('distance_order').updateValueAndValidity()
   }
 
   private updateCharts() {
@@ -70,28 +94,44 @@ export class ModelDashboardComponent implements OnInit {
       case 'Naive Bayesian':
         algorithm = 'naive_bayes'
         break;
-      case 'KNN':
-        algorithm = 'naive_bayes' // TODO: KNN
+      case 'Knn':
+        algorithm = 'knn'
         break;
     }
 
-    // this.httpClient.get<any>(`http://127.0.0.1:5000/datasets/${this.selectedDataset}`)
-    //   .subscribe(response => {
-    //     // this.labelColumn = response.tableHeaders
-    //     // this.tableValues = response.tableValues
-    //   })
-
+    const body = this.trainForm.value;
     this.httpClient.post<any>(`http://127.0.0.1:5000/classification/${algorithm}/${this.selectedDataset}`
-      , {
-        test_percentage: this.testPercentage,
-        label_column: this.labelColumn
-      })
+      , body)
       .subscribe(response => {
-        console.log(response)
-        this.accuracy = response.accuracy
-        this.precision = response.precision
-        this.recall = response.recall
-        this.animateCount()
+        this.accuracy = response.accuracy.toFixed(4)
+        this.precision = response.precision.toFixed(4)
+        this.recall = response.recall.toFixed(4)
+        this.initPredictForm();
+        this.trained = true;
+        this.predictedValue = null;
       })
+  }
+
+  private getHeaders() {
+    this.httpClient.get<any>(`http://127.0.0.1:5000/datasets/${this.selectedDataset}`)
+      .subscribe(response => {
+        this.headers = response.tableHeaders
+      })
+  }
+  private initTrainForm() {
+    this.trainForm = new FormGroup({
+      test_percentage: new FormControl(null, Validators.required),
+      label_column: new FormControl(null, Validators.required),
+      neighbour_count: new FormControl(),
+      distance_order: new FormControl()
+    });
+  }
+
+  private initPredictForm() {
+    const formControls = {};
+    this.headers.forEach(header => {
+      formControls[header] = new FormControl();
+    });
+    this.predictForm = new FormGroup(formControls);
   }
 }
