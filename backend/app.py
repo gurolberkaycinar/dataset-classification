@@ -1,10 +1,10 @@
-import json
 from flask import Flask, jsonify, request
 from sklearn.feature_extraction import DictVectorizer
 import numpy as np
 
 from classification.naive_bayes.naive_bayes import *
 from classification.knn.knn import *
+from classification.feature_importance.feature_importance import *
 from util.util import convert
 import pandas as pd
 from flask_cors import CORS
@@ -53,6 +53,7 @@ def knn_trainer(file_name):
     values = convert(
         ['tableHeaders', dataset.columns.tolist(), 'accuracy', accuracy, 'precision', precision, 'recall',
          recall])
+
     return jsonify(values)
 
 @app.route('/prediction/knn', methods=['POST'])
@@ -60,6 +61,12 @@ def knn_predicter():
     req = request.get_json()
     prediction: np.ndarray = knn_predict(req['features'], req['label'])
     return jsonify(prediction[-1].item())
+
+@app.route('/feature-importance', methods=['GET'])
+def get_feature_importance():
+    args = request.args
+    print(args)
+    return calculate_importance(args["dataset"], args["label_column"]).tolist()
 
 @app.route('/datasets/<dataset>', methods=['GET'])
 def get_dataset_sample(dataset):
