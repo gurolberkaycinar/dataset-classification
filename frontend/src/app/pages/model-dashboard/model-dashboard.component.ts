@@ -55,7 +55,7 @@ export class ModelDashboardComponent implements OnInit {
       , body)
       .subscribe(response => {
         console.log(response)
-        this.predictedValue = response;
+        this.predictedValue = response == 1 ? "phishing" : "legitimate";
       })
   }
 
